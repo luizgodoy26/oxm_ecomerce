@@ -32,9 +32,9 @@ class ContactForm(forms.Form):
         )
     )
 
-    # Valida se o e-mail é gmail
     def clean_email_contact(self):
         email_contact = self.cleaned_data.get("email_contact")
+        # Valida se o e-mail é gmail
         if not "@gmail.com" in email_contact:
             raise forms.ValidationError("E-mail precisa ser gmail!")
         return email_contact
@@ -48,3 +48,7 @@ class ContactForm(forms.Form):
     def clean_message(self):
         message = self.cleaned_data.get("message")
         return message
+
+class LoginForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
