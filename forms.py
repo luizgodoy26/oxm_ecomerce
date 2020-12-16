@@ -3,63 +3,43 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 # Form de login
 class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
 
 
+
 # Form de registro
 class RegisterForm(forms.Form):
-    username = forms.CharField(
-        label='Usuário',
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control',
-                'id': 'form_register_username',
-                'placeholder': 'Nome completo'
-            }
-        )
-    )
-    email = forms.EmailField(
-        label='E-mail',
-        widget=forms.EmailInput(
-            attrs={
-                'class': 'form-control',
-                'id': 'form_register_email',
-                'placeholder': 'E-mail'
-            }
-        )
-    )
-    password = forms.CharField(label='Crie sua senha', widget=forms.PasswordInput(attrs={
-                'class': 'form-control',
-                'id': 'form_register_p1',
-                'placeholder': 'Senha'
-            }
-        )
-    )
-    password2 = forms.CharField(label='Confirme a senha', widget=forms.PasswordInput(attrs={
-                'class': 'form-control',
-                'id': 'form_register_p2',
-                'placeholder': 'Confirmação de senha'
-            }
-        )
-    )
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
+    password2 = forms.CharField(widget=forms.PasswordInput)
+    email = forms.EmailField()
+
 
     def clean(self):
-        username = username = self.cleaned_data.get('username')
-        queryset = User.objects.filter(username=username)
-        if queryset.exists():
-            raise forms.ValidationError('Usuário já existe')
-        return username
-
-    def clean(self):
-        data = self.changed_data
+        data = self.cleaned_data
         password = self.cleaned_data.get('password')
         password2 = self.cleaned_data.get('password2')
         if password2 != password:
-            raise forms.ValidationError("Senhas não são correspondentes!")
+            raise forms.ValidationError('Senhas tem de ser iguais')
         return data
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        qs = User.objects.filter(username=username)
+        if qs.exists():
+            raise forms.ValidationError('Usuário já está em uso')
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        qs = User.objects.filter(email=email)
+        if qs.exists():
+            raise forms.ValidationError('E-mail já está em uso')
+        return email
 
 
 # Form de contato
